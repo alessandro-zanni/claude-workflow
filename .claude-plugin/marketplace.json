@@ -1,0 +1,14 @@
+{
+  "name": "claude-workflow",
+  "owner": {
+    "name": "alessandro-zanni"
+  },
+  "plugins": [
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow",
+      "description": "Git conventions, end-of-turn typecheck, SonarQube, brief/wrap/overview."
+    }
+  ],
+  "description": "Alessandro Zanni's Claude Code workflow"
+}

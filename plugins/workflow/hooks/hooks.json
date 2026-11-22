@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/verify-ts.sh\"",
+            "timeout": 180,
+            "statusMessage": "Typecheck and lint"
+          }
+        ]
+      }
+    ]
+  }
+}
