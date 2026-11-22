@@ -25,6 +25,10 @@ sonar.sourceEncoding=UTF-8
 sonar.sources=<source folders, e.g. app,lib,components>
 sonar.test.inclusions=**/*.test.ts,**/*.test.tsx
 sonar.exclusions=<generated code, generated UI primitives (components/ui/**), build, **/*.config.*, coverage/**>
+# Translation dictionaries written in code inside sonar.sources (e.g. lib/i18n.ts) repeat the same
+# keys in every language: left out of duplication only, still analyzed for bugs. Omit the line for
+# a single language, or for JSON dictionaries outside sonar.sources (e.g. next-intl's messages/*.json).
+sonar.cpd.exclusions=<translation dictionaries>
 sonar.javascript.lcov.reportPaths=coverage/lcov.info
 # Coverage only on logic the tests actually cover; no tests: **/*
 sonar.coverage.exclusions=<...>
@@ -62,6 +66,7 @@ curl -s -u "$SONAR_TOKEN:" "http://localhost:9000/api/issues/search?componentKey
   render props; S7780 `String.raw` on Next's `config.matcher`; S7784 `structuredClone` is not
   equivalent to `JSON.parse(JSON.stringify())`.
 - Generated types (e.g. `database.types.ts`) → `sonar.exclusions`. Translation dictionaries →
-  `sonar.cpd.exclusions`.
+  `sonar.cpd.exclusions` (not `sonar.exclusions`: their code keeps being analyzed). Without it the
+  gate fails on new-code duplication as soon as a string is added in two languages.
 - `sort()` without a comparator is a bug (S2871): use `localeCompare`.
 - `.astro` files are not analyzed by SonarQube Community.
