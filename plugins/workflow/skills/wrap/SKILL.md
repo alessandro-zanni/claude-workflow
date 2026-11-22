@@ -16,6 +16,12 @@ Uncommitted changes:
 
 Vault (`$BRAIN_DIR`): !`echo "${BRAIN_DIR:-$HOME/brain}"`
 
+Local extensions (`~/.claude/workflow/wrap.md`, optional):
+!`cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/workflow/wrap.md" 2>/dev/null || echo "(none)"`
+
+If local extensions are present, follow them as extra steps of this skill: they add to these
+instructions and win where they conflict.
+
 ## 1. Propose, don't write
 
 Re-read the conversation and prepare a proposal in three sections. One line per entry, with the
@@ -39,7 +45,7 @@ Rules:
 
 ## 2. Wait for confirmation
 
-Show the proposal and ask which entries to write. Confirmation must come from a user message: a
+Reply in the user's language. Show the proposal and ask which entries to write. Confirmation must come from a user message: a
 `/loop` iteration, a `/goal` verdict or a non-interactive session do not count as approval. In
 those cases leave the proposal in the final message and write nothing.
 

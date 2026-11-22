@@ -19,6 +19,12 @@ Uncommitted changes:
 Open issues:
 !`gh issue list --state open --limit 10 2>/dev/null || true`
 
+Local extensions (`~/.claude/workflow/brief.md`, optional):
+!`cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/workflow/brief.md" 2>/dev/null || echo "(none)"`
+
+If local extensions are present, follow them as extra steps of this skill: they add to these
+instructions and win where they conflict.
+
 ## What to do
 
 Read-only: don't modify any file.
@@ -33,7 +39,7 @@ Silently skip files that don't exist (including the whole vault, if missing).
 
 ## Answer
 
-At most 10 lines (13 with the Parallelizable block), in blocks:
+Reply in the user's language. At most 10 lines (13 with the Parallelizable block), in blocks:
 
 - **Where we left off**: the last work done, from commits and uncommitted changes
 - **Open**: open questions and pending decisions
