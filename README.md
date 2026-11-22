@@ -33,6 +33,24 @@ Skills also trigger on their own when the request matches (e.g. "where were we?"
 
 Set the variables in your shell profile or in `~/.claude/settings.json` under `env`.
 
+## Language
+
+Skills are written in English, but Claude replies in your language: the one you write in, or the
+one your `~/.claude/CLAUDE.md` asks for. Requests in any language trigger them.
+
+## Local extensions
+
+`brief`, `wrap` and `overview` read an optional personal file,
+`~/.claude/workflow/<skill>.md`, and follow it as extra steps. Use it for what only makes sense on
+your machine (a Notion page to check, a notes inbox to triage, a team-specific rule) without
+forking the plugin. Example `~/.claude/workflow/brief.md`:
+
+```markdown
+4. If `docs/client.md` exists, also list the client's open requests.
+
+In the answer, add a **Client** block with those requests.
+```
+
 ## Your own rules: CLAUDE.md
 
 A plugin can't ship a `CLAUDE.md`, and always-on rules (language, preferred stack, how much
