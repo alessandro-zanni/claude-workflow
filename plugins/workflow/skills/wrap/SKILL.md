@@ -1,63 +1,63 @@
 ---
 name: wrap
-description: Chiusura di un lavoro. Propone cosa salvare nei docs del repo e nel vault ($BRAIN_DIR, default ~/brain) e scrive solo le voci approvate dall'utente. Usala quando si chiude un lavoro significativo (feature committata, bug risolto dopo un debug, decisione presa) o quando l'utente chiude la sessione.
+description: Wraps up a piece of work. Proposes what to save in the repo docs and in the notes vault ($BRAIN_DIR, default ~/brain) and writes only the entries the user approves. Use it when significant work is done (feature committed, bug fixed after debugging, decision made) or when the user ends the session.
 allowed-tools: Bash(git rev-parse *), Bash(git log *), Bash(git status *)
 ---
 
-# Chiusura sessione
+# Wrap-up
 
 Repo: !`git rev-parse --show-toplevel 2>/dev/null || pwd`
 
-Ultimi commit:
-!`git log --oneline -10 2>/dev/null || echo "(non è un repo git)"`
+Recent commits:
+!`git log --oneline -10 2>/dev/null || echo "(not a git repo)"`
 
-Modifiche non committate:
+Uncommitted changes:
 !`git status --short 2>/dev/null || true`
 
 Vault (`$BRAIN_DIR`): !`echo "${BRAIN_DIR:-$HOME/brain}"`
 
-## 1. Proponi, senza scrivere
+## 1. Propose, don't write
 
-Rileggi la conversazione e prepara una proposta in tre sezioni. Una riga per voce, con il file di
-destinazione.
+Re-read the conversation and prepare a proposal in three sections. One line per entry, with the
+target file.
 
-- **A. Docs del repo**: aggiornamenti allo stato e alle decisioni secondo le convenzioni dell'AGENTS.md
-  del repo. Salta quello che è già finito nei commit.
-- **B. `$BRAIN_DIR/projects/<nome della cartella del repo>.md`**: questioni aperte e contesto non di
-  codice (cliente, persone, scadenze).
-- **C. `$BRAIN_DIR/resources/` o `$BRAIN_DIR/areas/`**: lezioni che valgono anche per altri progetti. Prima
-  cerca se esiste già una nota sull'argomento: se c'è, aggiorna quella.
+- **A. Repo docs**: status and decision updates, following the conventions in the repo's
+  AGENTS.md (or CLAUDE.md). Skip what is already captured in commits.
+- **B. `$BRAIN_DIR/projects/<repo folder name>.md`**: open questions and non-code context (client,
+  people, deadlines).
+- **C. `$BRAIN_DIR/resources/` or `$BRAIN_DIR/areas/`**: lessons that apply to other projects too.
+  First search for an existing note on the topic: if there is one, update it.
 
-Regole:
+Rules:
 
-- Solo fatti utili in una sessione futura e non ricavabili dal codice o da `git log`.
-- Niente cronaca della sessione, hash dei commit o stati temporanei.
-- Niente segreti: password, token, chiavi.
-- Correzioni e preferenze che riguardano solo questo repo vanno nell'auto memory, non nel vault.
-- Se il vault non esiste, salta B e C.
-- Se non c'è niente da salvare, dillo in una riga e fermati.
+- Only facts useful in a future session and not derivable from the code or `git log`.
+- No session narrative, commit hashes or temporary states.
+- No secrets: passwords, tokens, keys.
+- Corrections and preferences that only concern this repo go in auto memory, not the vault.
+- If the vault doesn't exist, skip B and C.
+- If there is nothing to save, say so in one line and stop.
 
-## 2. Aspetta la conferma
+## 2. Wait for confirmation
 
-Mostra la proposta e chiedi quali voci scrivere. La conferma deve arrivare da un messaggio
-dell'utente: un'iterazione di `/loop`, il verdetto di `/goal` o una sessione non interattiva non
-valgono come approvazione. In quei casi lascia la proposta nel messaggio finale e non scrivere nulla.
+Show the proposal and ask which entries to write. Confirmation must come from a user message: a
+`/loop` iteration, a `/goal` verdict or a non-interactive session do not count as approval. In
+those cases leave the proposal in the final message and write nothing.
 
-## 3. Scrivi
+## 3. Write
 
-Il vault è un repo solo, scritto da più sessioni in parallelo. Due regole per non pestarsi:
+The vault is a single repo, written by several sessions in parallel. Two rules to avoid collisions:
 
-**Prima di toccare un file del vault**, controlla che non lo stia già scrivendo qualcun altro:
+**Before touching a vault file**, check nobody else is writing it:
 
 ```
 git -C $BRAIN_DIR status --short -- <file>
 ```
 
-Se risulta già modificato, un'altra sessione è a metà di una scrittura. **Fermati e dillo
-all'utente**, non fondere le due versioni a occhio.
+If it is already modified, another session is mid-write. **Stop and tell the user**; don't merge
+the two versions by eye.
 
-**In staging solo i file che hai scritto tu**, mai `add -A`: prenderebbe anche il lavoro in
-corso di un'altra sessione e lo committerebbe a sua insaputa.
+**Stage only the files you wrote**, never `add -A`: it would pick up another session's work in
+progress and commit it behind its back.
 
-- vault: `git -C $BRAIN_DIR add <i file scritti> && git -C $BRAIN_DIR commit -m "<cosa>"`
-- repo: un commit `docs:` secondo le convenzioni del repo, senza push
+- vault: `git -C $BRAIN_DIR add <files written> && git -C $BRAIN_DIR commit -m "<what>"`
+- repo: a `docs:` commit following the repo's conventions, no push

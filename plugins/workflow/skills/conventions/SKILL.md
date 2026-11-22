@@ -1,56 +1,57 @@
 ---
 name: conventions
-description: Convenzioni di lavoro su git e repo - gitflow, Conventional Commits, versione semver di un rilascio, .env.example, worktree per task paralleli. Usala prima di creare un branch, committare, fare merge, rilasciare o taggare una versione, aggiungere variabili d'ambiente o aprire un worktree.
+description: Git and repo conventions - gitflow, Conventional Commits, semver release versioning, .env.example, worktrees for parallel tasks. Use it before creating a branch, committing, merging, releasing or tagging a version, adding environment variables or opening a worktree.
 ---
 
-# Convenzioni
+# Conventions
 
-L'AGENTS.md (o CLAUDE.md) del repo ha la precedenza su queste regole.
+The repo's AGENTS.md (or CLAUDE.md) takes precedence over these rules.
 
-## Commit
+## Commits
 
-- Piccoli e atomici, in inglese, formato Conventional Commits (`feat:`, `fix:`, `docs:`,
-  `refactor:`, `chore:`, …). `!` dopo il tipo o `BREAKING CHANGE:` nel corpo per le rotture.
-- Commit e push solo quando l'utente lo chiede.
+- Small and atomic, in English, Conventional Commits format (`feat:`, `fix:`, `docs:`,
+  `refactor:`, `chore:`, …). `!` after the type or `BREAKING CHANGE:` in the body for breaking
+  changes.
+- Commit and push only when the user asks.
 
-## Branch: gitflow
+## Branches: gitflow
 
-- `feat/` e `fix/` partono da `develop` e tornano su `develop`. Il merge su `develop` è il rilascio
-  su staging.
-- Il rilascio vero è il merge di `develop` su `main`, dopo i test su staging, e lo decide l'utente.
-  La versione si imposta con un commit su `main`, che riceve il tag `vX.Y.Z` (pushato con `main`).
-  Poi `main` si riporta su `develop` e si eliminano, locali e remoti, i branch entrati nel rilascio.
-- `hotfix/` parte da `main`, torna su `main` con versione aggiornata, poi `main` si riporta su
-  `develop`.
+- `feat/` and `fix/` branch off `develop` and merge back into `develop`. Merging into `develop` is
+  the staging release.
+- The real release is merging `develop` into `main`, after testing on staging, and the user decides
+  when. The version is set with a commit on `main`, tagged `vX.Y.Z` (pushed with `main`). Then
+  `main` is merged back into `develop` and the released branches are deleted, locally and remotely.
+- `hotfix/` branches off `main`, returns to `main` with a bumped version, then `main` is merged back
+  into `develop`.
 
-## Versione di un rilascio (anche hotfix)
+## Release version (hotfixes too)
 
-Dai commit dall'ultimo tag (`git log $(git describe --tags --abbrev=0)..HEAD --oneline`):
+From the commits since the last tag (`git log $(git describe --tags --abbrev=0)..HEAD --oneline`):
 
-- `!` o `BREAKING CHANGE` → major
-- almeno un `feat:` → minor
-- altrimenti → patch
+- `!` or `BREAKING CHANGE` → major
+- at least one `feat:` → minor
+- otherwise → patch
 
-La prima versione è `1.0.0`. Prima di rilasciare, di' quale versione proponi e perché, e aspetta la
-conferma.
+The first version is `1.0.0`. Before releasing, state which version you propose and why, and wait
+for confirmation.
 
-## Variabili d'ambiente
+## Environment variables
 
-- Quando crei un `.env*` o aggiungi una variabile, crea o aggiorna `.env.example` committato: nomi
-  delle variabili, valori vuoti, mai segreti.
-- Se `.gitignore` copre `.env*`, aggiungi l'eccezione `!.env.example`.
-- Chiavi API di terzi: una per ambiente (`<progetto>-local`, `-staging`, `-prod`) quando il servizio
-  lo consente, così se ne revoca una senza toccare le altre. Mai incollarle in chat.
+- When you create a `.env*` file or add a variable, create or update a committed `.env.example`:
+  variable names, empty values, never secrets.
+- If `.gitignore` covers `.env*`, add the exception `!.env.example`.
+- Third-party API keys: one per environment (`<project>-local`, `-staging`, `-prod`) when the
+  service allows it, so one can be revoked without touching the others. Never paste them in chat.
 
-## Task paralleli: worktree
+## Parallel tasks: worktrees
 
-- Due task indipendenti sullo stesso repo (che non toccano gli stessi file) → un worktree per task.
-- Prima di aprirlo, controlla che `.worktreeinclude` copra i file gitignorati necessari (`.env*`,
-  `.envrc`, dati locali); se manca qualcosa, aggiungilo.
-- A lavoro concluso (branch committato) elimina il worktree con `git worktree remove`. Il branch di
-  lavoro resta.
+- Two independent tasks on the same repo (not touching the same files) → one worktree per task.
+- Before opening one, check that `.worktreeinclude` covers the gitignored files needed (`.env*`,
+  `.envrc`, local data); add what is missing.
+- When done (branch committed) remove the worktree with `git worktree remove`. The work branch
+  stays.
 
-## Fork
+## Forks
 
-Un fork segue le convenzioni dell'upstream (file di istruzioni, stile dei commit) e resta allineato:
-solo `main`, nessun commit proprio sul fork.
+A fork follows the upstream's conventions (instruction files, commit style) and stays in sync: only
+`main`, no commits of your own on the fork.

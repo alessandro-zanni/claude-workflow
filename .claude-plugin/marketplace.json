@@ -7,8 +7,8 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Convenzioni git, typecheck a fine turno, SonarQube, brief/wrap/panoramica."
+      "description": "Git conventions, end-of-turn typecheck, SonarQube, brief/wrap/overview."
     }
   ],
-  "description": "Il workflow di Alessandro per Claude Code"
+  "description": "Alessandro Zanni's Claude Code workflow"
 }

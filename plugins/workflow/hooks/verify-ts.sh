@@ -1,7 +1,7 @@
 #!/bin/bash
-# Stop hook: typecheck + ESLint sui file .ts/.tsx modificati dall'ultimo turno.
-# Se falliscono, exit 2: Claude riceve l'errore e corregge prima di fermarsi.
-# Esce 0 (non blocca) se il progetto non ha uno script "typecheck" o nulla è cambiato.
+# Stop hook: typecheck + ESLint on .ts/.tsx files changed since the last turn.
+# On failure, exit 2: Claude gets the error and fixes it before stopping.
+# Exits 0 (no block) if the project has no "typecheck" script or nothing changed.
 set -u
 
 input=$(cat)
@@ -14,7 +14,7 @@ jq -e '.scripts.typecheck' package.json >/dev/null 2>&1 || exit 0
 state="${TMPDIR:-/tmp}/verify-ts-$sid"
 marker="$state.mark"
 
-# File TS modificati, staged o nuovi (esclusi i cancellati), toccati dopo il turno precedente
+# Modified, staged or new TS files (deleted excluded) touched after the previous turn
 changed=()
 while IFS= read -r f; do
   [ -f "$f" ] || continue
@@ -33,13 +33,13 @@ out=$("$pm" run typecheck 2>&1) && {
   out=$(node_modules/.bin/eslint --no-warn-ignored "${changed[@]}" 2>&1)
 } && { rm -f "$state.count"; exit 0; }
 
-# Al massimo 3 blocchi consecutivi: poi lascia fermare Claude (niente loop infinito di fix),
-# ma i controlli girano comunque, così il contatore si azzera appena passano.
+# At most 3 consecutive blocks: then let Claude stop (no endless fix loop),
+# but checks still run, so the counter resets as soon as they pass.
 blocks=$(cat "$state.count" 2>/dev/null || echo 0)
 [ "$blocks" -ge 3 ] && exit 0
 echo $((blocks + 1)) > "$state.count"
 {
-  echo "Typecheck o ESLint falliti sui file modificati: correggi prima di chiudere il turno."
+  echo "Typecheck or ESLint failed on changed files: fix before ending the turn."
   printf '%s\n' "$out" | tail -40
 } >&2
 exit 2

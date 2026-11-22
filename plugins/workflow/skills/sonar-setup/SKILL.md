@@ -1,67 +1,67 @@
 ---
 name: sonar-setup
-description: Aggiunge l'analisi statica SonarQube (server locale) a un progetto JS/TS - sonar-project.properties, script sonar, collegamento a SonarLint in VS Code - e spiega come leggere i risultati e i falsi positivi ricorrenti. Usala quando l'utente vuole SonarQube in un repo, lanciare una scan o capire perché il quality gate è rosso.
+description: Adds SonarQube static analysis (local server) to a JS/TS project - sonar-project.properties, sonar script, SonarLint connection in VS Code - and explains how to read results and recurring false positives. Use it when the user wants SonarQube in a repo, wants to run a scan, or asks why the quality gate is red.
 ---
 
-# SonarQube nel progetto
+# SonarQube in a project
 
-Prerequisiti (dillo all'utente se mancano, non installarli da solo):
+Prerequisites (tell the user if missing, don't install them yourself):
 
-- un server SonarQube su `http://localhost:9000`, es.
+- a SonarQube server on `http://localhost:9000`, e.g.
   `docker run -d --name sonarqube -p 9000:9000 sonarqube:community`;
-- un token utente nella shell come `SONAR_TOKEN` (mai nel repo né in chat). Il progetto sul server
-  si crea da solo alla prima scan.
+- a user token in the shell as `SONAR_TOKEN` (never in the repo or in chat). The project is created
+  on the server automatically at the first scan.
 
-Solo per progetti con codice applicativo, non per repo di soli docs o config.
+Only for projects with application code, not docs- or config-only repos.
 
-## File da aggiungere
+## Files to add
 
-`sonar-project.properties` (project key = nome del repo):
+`sonar-project.properties` (project key = repo name):
 
 ```properties
 sonar.projectKey=<repo>
 sonar.host.url=http://localhost:9000
 sonar.sourceEncoding=UTF-8
-sonar.sources=<cartelle sorgente, es. app,lib,components>
+sonar.sources=<source folders, e.g. app,lib,components>
 sonar.test.inclusions=**/*.test.ts,**/*.test.tsx
-sonar.exclusions=<codice generato, primitive UI generate (components/ui/**), build, **/*.config.*, coverage/**>
+sonar.exclusions=<generated code, generated UI primitives (components/ui/**), build, **/*.config.*, coverage/**>
 sonar.javascript.lcov.reportPaths=coverage/lcov.info
-# Copertura solo sulla logica coperta davvero dai test; senza test: **/*
+# Coverage only on logic the tests actually cover; no tests: **/*
 sonar.coverage.exclusions=<...>
 ```
 
-- devDependency `@sonar/scan`; script `"sonar": "<test con coverage lcov> && sonar-scanner-npm"`
-  (con bun: `bun test --coverage --coverage-reporter=lcov`).
+- devDependency `@sonar/scan`; script `"sonar": "<tests with lcov coverage> && sonar-scanner-npm"`
+  (with bun: `bun test --coverage --coverage-reporter=lcov`).
 - `.scannerwork` in `.gitignore`.
-- `.vscode/` versionata: `settings.json` con
+- Versioned `.vscode/`: `settings.json` with
   `"sonarlint.connectedMode.project": {"connectionId": "sonarqube-local", "projectKey": "<repo>"}`,
-  `extensions.json` che raccomanda `SonarSource.sonarlint-vscode`.
-- Una sezione "Static analysis" nei docs del repo.
+  `extensions.json` recommending `SonarSource.sonarlint-vscode`.
+- A "Static analysis" section in the repo docs.
 
-Scan prima di un rilascio e dopo cambi grossi: bug e vulnerabilità nuovi si correggono, i code
-smell si valutano.
+Scan before a release and after big changes: new bugs and vulnerabilities get fixed, code smells
+get evaluated.
 
-## Leggere i risultati senza la UI
+## Reading results without the UI
 
-Il server elabora il report qualche secondo dopo la scan: aspetta prima di leggere.
+The server processes the report a few seconds after the scan ends: wait before reading.
 
 ```bash
 curl -s -u "$SONAR_TOKEN:" "http://localhost:9000/api/qualitygates/project_status?projectKey=<key>"
 curl -s -u "$SONAR_TOKEN:" "http://localhost:9000/api/issues/search?componentKeys=<key>&inNewCodePeriod=true"
 ```
 
-## Tranelli
+## Gotchas
 
-- Il gate "Sonar way" fallisce con **un solo problema nuovo** e con copertura del codice nuovo
-  sotto l'80%: in un progetto senza test serve `sonar.coverage.exclusions=**/*`.
-- Toccare una riga con un vecchio avviso lo rende "nuovo": riscrivi il costrutto invece di spegnere
-  la regola.
-- Per i falsi positivi usa `sonar.issue.ignore.multicriteria` limitato al file, con il motivo in un
-  commento accanto. Niente `// NOSONAR`.
-- Falsi positivi ricorrenti (React/Next): S6478 su `header`/`cell` di TanStack Table e render prop;
-  S7780 `String.raw` sul `config.matcher` di Next; S7784 `structuredClone` al posto di
-  `JSON.parse(JSON.stringify())` non è equivalente.
-- Tipi generati (es. `database.types.ts`) → `sonar.exclusions`. Dizionari di traduzione →
+- The "Sonar way" gate fails on **a single new issue** and on new-code coverage below 80%: a project
+  without tests needs `sonar.coverage.exclusions=**/*`.
+- Touching a line with an old warning makes it "new": rewrite the construct instead of disabling
+  the rule.
+- For false positives use `sonar.issue.ignore.multicriteria` scoped to the file, with the reason in
+  a comment next to it. No `// NOSONAR`.
+- Recurring false positives (React/Next): S6478 on TanStack Table `header`/`cell` functions and
+  render props; S7780 `String.raw` on Next's `config.matcher`; S7784 `structuredClone` is not
+  equivalent to `JSON.parse(JSON.stringify())`.
+- Generated types (e.g. `database.types.ts`) → `sonar.exclusions`. Translation dictionaries →
   `sonar.cpd.exclusions`.
-- `sort()` senza comparatore è un bug (S2871): usa `localeCompare`.
-- I file `.astro` non vengono analizzati da SonarQube Community.
+- `sort()` without a comparator is a bug (S2871): use `localeCompare`.
+- `.astro` files are not analyzed by SonarQube Community.
