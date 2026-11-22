@@ -1,14 +1,14 @@
 ---
 name: brief
 description: Read-only briefing on the current repo (where we left off, what is open, next step). Use it when the user wants to resume work ("let's pick up", "where were we", "what's the status").
-allowed-tools: Bash(git rev-parse *), Bash(git log *), Bash(git status *), Bash(gh issue list *)
+allowed-tools: Bash(sh *context.sh*), Bash(git rev-parse *), Bash(git log *), Bash(git status *), Bash(gh issue list *)
 ---
 
 # Session brief
 
 Repo: !`git rev-parse --show-toplevel 2>/dev/null || pwd`
 
-Vault (`$BRAIN_DIR`): !`echo "${BRAIN_DIR:-$HOME/brain}"`
+Vault (`$BRAIN_DIR`): !`sh "${CLAUDE_SKILL_DIR}/../../scripts/context.sh" vault`
 
 Recent commits:
 !`git log --oneline -10 2>/dev/null || echo "(not a git repo)"`
@@ -20,7 +20,7 @@ Open issues:
 !`gh issue list --state open --limit 10 2>/dev/null || true`
 
 Local extensions (`~/.claude/workflow/brief.md`, optional):
-!`cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/workflow/brief.md" 2>/dev/null || echo "(none)"`
+!`sh "${CLAUDE_SKILL_DIR}/../../scripts/context.sh" ext brief`
 
 If local extensions are present, follow them as extra steps of this skill: they add to these
 instructions and win where they conflict.

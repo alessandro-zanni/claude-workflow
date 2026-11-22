@@ -1,7 +1,7 @@
 ---
 name: wrap
 description: Wraps up a piece of work. Proposes what to save in the repo docs and in the notes vault ($BRAIN_DIR, default ~/brain) and writes only the entries the user approves. Use it when significant work is done (feature committed, bug fixed after debugging, decision made) or when the user ends the session.
-allowed-tools: Bash(git rev-parse *), Bash(git log *), Bash(git status *)
+allowed-tools: Bash(sh *context.sh*), Bash(git rev-parse *), Bash(git log *), Bash(git status *)
 ---
 
 # Wrap-up
@@ -14,10 +14,10 @@ Recent commits:
 Uncommitted changes:
 !`git status --short 2>/dev/null || true`
 
-Vault (`$BRAIN_DIR`): !`echo "${BRAIN_DIR:-$HOME/brain}"`
+Vault (`$BRAIN_DIR`): !`sh "${CLAUDE_SKILL_DIR}/../../scripts/context.sh" vault`
 
 Local extensions (`~/.claude/workflow/wrap.md`, optional):
-!`cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/workflow/wrap.md" 2>/dev/null || echo "(none)"`
+!`sh "${CLAUDE_SKILL_DIR}/../../scripts/context.sh" ext wrap`
 
 If local extensions are present, follow them as extra steps of this skill: they add to these
 instructions and win where they conflict.
