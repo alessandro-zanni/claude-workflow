@@ -1,7 +1,7 @@
 ---
 name: overview
 description: Overview of all projects in $PROJECTS_DIR (default ~/projects) - branch, last commit, uncommitted changes, open issues, what is in progress. Use it when the user asks how their projects are doing, where to pick up, or what was left hanging.
-allowed-tools: Bash(git *), Bash(gh issue list *)
+allowed-tools: Bash(sh *context.sh*), Bash(git *), Bash(gh issue list *)
 ---
 
 # Projects overview
@@ -9,7 +9,7 @@ allowed-tools: Bash(git *), Bash(gh issue list *)
 !`sh "${CLAUDE_SKILL_DIR}/status.sh"`
 
 Local extensions (`~/.claude/workflow/overview.md`, optional):
-!`cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/workflow/overview.md" 2>/dev/null || echo "(none)"`
+!`sh "${CLAUDE_SKILL_DIR}/../../scripts/context.sh" ext overview`
 
 If local extensions are present, follow them as extra steps of this skill: they add to these
 instructions and win where they conflict.
