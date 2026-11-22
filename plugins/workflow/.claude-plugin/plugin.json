@@ -1,0 +1,9 @@
+{
+  "name": "workflow",
+  "version": "1.0.0",
+  "description": "Convenzioni git (gitflow, semver), typecheck automatico a fine turno, SonarQube, e skill per riprendere e chiudere il lavoro con un vault Markdown.",
+  "author": {
+    "name": "Alessandro Zanni"
+  },
+  "license": "MIT"
+}
