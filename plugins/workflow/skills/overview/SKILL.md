@@ -8,6 +8,12 @@ allowed-tools: Bash(git *), Bash(gh issue list *)
 
 !`sh "${CLAUDE_SKILL_DIR}/status.sh"`
 
+Local extensions (`~/.claude/workflow/overview.md`, optional):
+!`cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/workflow/overview.md" 2>/dev/null || echo "(none)"`
+
+If local extensions are present, follow them as extra steps of this skill: they add to these
+instructions and win where they conflict.
+
 ## What to do
 
 Read-only: don't modify any file.
@@ -18,6 +24,6 @@ progress. Ignore the others: the digest line is enough for them.
 
 ## Answer
 
-A table: project, one-line status, next step. At most two lines per project, and at the end one
+Reply in the user's language. A table: project, one-line status, next step. At most two lines per project, and at the end one
 line on which project to resume first and why. Repos marked `(fork)` (they have an `upstream`
 remote) go at the bottom, separated from the others.
