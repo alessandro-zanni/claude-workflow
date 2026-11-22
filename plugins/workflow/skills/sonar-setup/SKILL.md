@@ -25,8 +25,9 @@ sonar.sourceEncoding=UTF-8
 sonar.sources=<source folders, e.g. app,lib,components>
 sonar.test.inclusions=**/*.test.ts,**/*.test.tsx
 sonar.exclusions=<generated code, generated UI primitives (components/ui/**), build, **/*.config.*, coverage/**>
-# Translation dictionaries (e.g. lib/i18n.ts, messages/**) repeat the same keys in every language:
-# left out of duplication only, still analyzed for bugs. Omit the line in a single-language project.
+# Translation dictionaries written in code inside sonar.sources (e.g. lib/i18n.ts) repeat the same
+# keys in every language: left out of duplication only, still analyzed for bugs. Omit the line for
+# a single language, or for JSON dictionaries outside sonar.sources (e.g. next-intl's messages/*.json).
 sonar.cpd.exclusions=<translation dictionaries>
 sonar.javascript.lcov.reportPaths=coverage/lcov.info
 # Coverage only on logic the tests actually cover; no tests: **/*
